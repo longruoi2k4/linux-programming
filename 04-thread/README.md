@@ -1,5 +1,5 @@
-signal-handle: handle signal with custom acion.
-signal-blocking: block or unblock signals with signal mask. 
+thread-id: 2 thread with basic action.
+multi-thread: synchronize 3 thread with mutex and condition var.
 
 In each folder, follow instructions:
 - make: build ex file.
