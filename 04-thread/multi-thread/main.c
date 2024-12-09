@@ -14,8 +14,6 @@ typedef struct {
 
 Student student;
 
-int checkAdd = 1;
-
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond1 = PTHREAD_COND_INITIALIZER;
 pthread_cond_t cond2 = PTHREAD_COND_INITIALIZER;
@@ -24,10 +22,8 @@ pthread_cond_t cond3 = PTHREAD_COND_INITIALIZER;
 static void *thread_handle1(void *arg) {
     while(1) {
         pthread_mutex_lock(&mutex);
-        while (!checkAdd) {
-            pthread_cond_wait(&cond1, &mutex);
-        }
         // Nhập thông tin
+        printf("\n");
         printf("Enter name: ");
         fgets(student.name, 20, stdin);
         student.name[strcspn(student.name, "\n")] = '\0';
@@ -42,12 +38,9 @@ static void *thread_handle1(void *arg) {
         fgets(student.hometown, 20, stdin);
         student.hometown[strcspn(student.hometown, "\n")] = '\0';
 
-        checkAdd  = 0;
-
         pthread_cond_signal(&cond2); // Gửi tín hiệu cho thread 2.
-        pthread_mutex_unlock(&mutex);
-         
         pthread_cond_wait(&cond1, &mutex); // Chờ tín hiệu từ thread 3.
+        pthread_mutex_unlock(&mutex);
     }
     pthread_exit(NULL);
 }
@@ -75,36 +68,25 @@ static void *thread_handle2(void *arg) {
 
         close(fd);
 
-        pthread_mutex_unlock(&mutex);
         pthread_cond_signal(&cond3); // Gửi tín hiệu cho thread 3.
+        pthread_mutex_unlock(&mutex);
         
     }
     pthread_exit(NULL);
 }
 
 static void *thread_handle3(void *arg) {
-    char line[100];
     while(1) {
         pthread_cond_wait(&cond3, &mutex); // Thread 3 đợi.
 
-        int fd = open("studentInfor.txt", O_RDONLY);
-        if(fd == -1) {
-            printf("openFile() failed");
-            exit(EXIT_FAILURE);
-        }
+        // In thông tin sinh viên vừa nhập
+        printf("\nRecently added student information:\n");
+        printf("Name: %s\n", student.name);
+        printf("Year date: %d\n", student.year_date);
+        printf("Hometown: %s\n", student.hometown);
 
-        // Ghi thông tin vào màn hình.
-        printf("Data added recently:\n");
-        while(read(fd, line, 100) > 0) {
-            printf("%s", line);
-        }
-
-        close(fd);
-
-        checkAdd  = 1;
-
-        pthread_mutex_unlock(&mutex);
         pthread_cond_signal(&cond1); // Gửi tín hiệu cho thread 1.
+        pthread_mutex_unlock(&mutex);
     }
     pthread_exit(NULL);
 }
