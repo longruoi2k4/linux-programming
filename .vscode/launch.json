@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/duonglong2701/workspace/test/linux-programming/05-socket",
+      "program": "/Users/duonglong2701/workspace/test/linux-programming/05-socket/build/Debug/outDebug"
+    }
+  ]
+}
